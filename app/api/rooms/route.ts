@@ -6,6 +6,15 @@ const getRandomColor = () => {
     return colors[Math.floor(Math.random() * colors.length)];
 }
 
+const createRandomCode = () => {
+    const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    let code = ''
+    for(let i = 0; i < 6; ++i) {
+        code += alphabet[Math.floor(Math.random() * alphabet.length)]
+    }
+    return code
+}
+
 export async function POST(request: Request) {
     try {
         const supabase = await createClient();
@@ -21,14 +30,17 @@ export async function POST(request: Request) {
             return;
         }
 
+        const code = createRandomCode()
+
         const { data, error } = await supabase
             .from('rooms')
             .insert({
                 host_id: user.id,
                 name: `Room ${Date.now()}`,
-                status: 'pending'
+                status: 'pending',
+                code: code
             })
-            .select()
+            .select()   
             .single();
 
         if (!data) {

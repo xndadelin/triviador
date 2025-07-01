@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Loading } from '@/components/Loading';
 import { useEffect, useState, useRef } from 'react';
 import { LogOut, User, PlusCircle, KeyRound, Trophy } from 'lucide-react';
+import JoinRoom from '@/components/JoinRoom';
 
 export default function Play() {
   const { user, loading, error } = useGetUser();
@@ -13,6 +14,7 @@ export default function Play() {
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
   const menuRef = useRef(null);
+  const [room_id, setRoomId] = useState<string>('')
 
   useEffect(() => {
     if (!loading && !user) {
@@ -121,12 +123,7 @@ export default function Play() {
           <PlusCircle className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
           {createLoading ? 'Creating...' : 'Create room'}
         </button>
-        <button
-          className="w-full h-12 px-6 py-2 rounded-lg bg-white text-black border border-gray-300 font-semibold shadow hover:bg-gray-100 flex items-center justify-center cursor-pointer text-base gap-2 group"
-        >
-          <KeyRound className="w-6 h-6 text-[#611f69] group-hover:scale-110 transition-transform" />
-          Join room
-        </button>
+        <JoinRoom user_id={user.id} />
       </div>
     </div>
   );

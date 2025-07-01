@@ -5,12 +5,14 @@ import Error from "@/components/Error";
 import useGetRoom from "@/utils/hooks/useGetRoom";
 import useGetUsers from "@/utils/hooks/useGetUsers";
 import { Loading } from "@/components/Loading";
+import { useGetUser } from "@/utils/hooks/useGetUser";
 
 export default function Room() {
     const { room } = useParams();
 
     const { room: roomData, loading, error } = useGetRoom(room as string);
     const { users, loading: usersLoading, error: usersError } = useGetUsers(room as string);
+    const { user, error: errorUser, loading: loadingError } = useGetUser()
 
     if (loading || usersLoading) {
         return <Loading />;
