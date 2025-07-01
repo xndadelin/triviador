@@ -13,9 +13,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { KeyRound } from 'lucide-react';
+import { useRouter } from 'next/navigation'; 
 
 export default function JoinRoom({ user_id }: { user_id: string }) {
     const [code, setCode] = useState('');
+    const router = useRouter()
 
     const onJoinRoom = async () => {
         console.log('Attempting to join room with:', { user_id, code });
@@ -30,8 +32,10 @@ export default function JoinRoom({ user_id }: { user_id: string }) {
                 method: 'POST',
             });
 
+            const data = await result.json()
+
             if (result.ok) {
-                alert('yey! you joined the room');
+                router.push(`/play/${data.room_id}`)
             } else {
                 const errorData = await result.json();
                 alert(`something went really bad! ${errorData.error}`)
