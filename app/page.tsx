@@ -23,7 +23,7 @@ export default function Home() {
   if (error && error !== 'Auth session missing!')  return <Error error={error as string} />;
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#f8fafc] to-[#e0e7ef]">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-purple-100 via-white to-yellow-100">
       <div className="bg-white/80 rounded-2xl shadow-xl px-10 py-12 flex flex-col items-center gap-8 border border-gray-200 max-w-md w-full">
         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 text-center drop-shadow-sm tracking-tight">Welcome to <span className="text-[#611f69]">Triviador!</span></h1>
         <p className="text-gray-600 text-center mb-4 text-base md:text-lg">Test your knowledge and challenge your friends.</p>

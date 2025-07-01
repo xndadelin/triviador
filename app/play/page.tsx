@@ -6,22 +6,22 @@ import { Loading } from '@/components/Loading';
 import { useEffect, useState, useRef } from 'react';
 import { LogOut, User, PlusCircle, KeyRound, Trophy } from 'lucide-react';
 import JoinRoom from '@/components/JoinRoom';
+import useGetRooms from '@/utils/hooks/useGetRooms';
 
 export default function Play() {
   const { user, loading, error } = useGetUser();
+  const { rooms, error: roomsError, loading: roomsLoading } = useGetRooms();
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
   const menuRef = useRef(null);
-  const [room_id, setRoomId] = useState<string>('')
 
   useEffect(() => {
     if (!loading && !user) {
       router.push('/');
     }
   }, [user, loading, router]);
-
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -36,7 +36,6 @@ export default function Play() {
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showMenu]);
-
 
   if (loading || logoutLoading) return <Loading />;
   if (error) return (
@@ -67,7 +66,7 @@ export default function Play() {
       if (data.room.id) {
         router.push(`/play/${data.room.id}`);
       } else {
-        alert(data.error || 'Could not create room');
+        alert(data.error);
       }
     } catch (e) {
       alert('Unexpected error creating room');
@@ -77,7 +76,7 @@ export default function Play() {
   };
 
   return (
-    <div className="min-h-screen w-full p-8 flex flex-col items-center justify-start relative bg-gradient-to-br from-purple-100 via-white to-yellow-100">
+    <div className="min-h-screen w-full p-8 flex flex-col items-center justify-start relative">
       <div className="absolute top-6 right-8 z-20">
         <button
           className=""
@@ -124,6 +123,32 @@ export default function Play() {
           {createLoading ? 'Creating...' : 'Create room'}
         </button>
         <JoinRoom user_id={user.id} />
+      </div>
+
+      <div className="mt-8 mx-auto text-center max-w-[700px]">
+        <h2 className="text-2xl font-bold mb-6 text-purple-800">Your rooms</h2>
+        {roomsLoading ? (
+          <div className="text-gray-500 italic">Loading your rooms...</div>
+        ) : roomsError ? (
+          <div className="text-red-600 font-medium">{roomsError}</div>
+        ) : rooms && rooms.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {rooms.map((room: any) => (
+              <div key={room.id} className="p-6 bg-white rounded-lg shadow-md border border-gray-300">
+                <h3 className="text-lg font-semibold text-purple-700">{room.name}</h3>
+                <p className="text-sm text-gray-500">Room ID: {room.id}</p>
+                <button
+                  onClick={() => router.push(`/play/${room.id}`)}
+                  className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg shadow hover:bg-purple-700 transition cursor-pointer"
+                >
+                  Go to room
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-gray-500 italic">You have no rooms yet. Create one to get started!</div>
+        )}
       </div>
     </div>
   );
