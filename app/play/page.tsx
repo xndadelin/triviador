@@ -62,8 +62,8 @@ export default function Play() {
     try {
       const res = await fetch('/api/rooms', { method: 'POST' });
       const data = await res.json();
-      if (data.id) {
-        router.push(`/play/${data.id}`);
+      if (data.room.id) {
+        router.push(`/play/${data.room.id}`);
       } else {
         alert(data.error || 'Could not create room');
       }
