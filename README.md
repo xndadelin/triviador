@@ -1,36 +1,23 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+the game is simple
 
-## Getting Started
+players join a room and start on a shared map
+to conquer a territory, you attack it
+you and the defender get a trivia question
+the faster and more accurate answer wins the fight
+you expand, defend, or lose land based on your answers
+whoever controls the most territory in the end wins
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+the flow
+1. users loggon and they can either join or create a room (room.status = pending)
+2. when the host feels like there are enough players, it can start (room.status = active)
+3. the map will generate and attribute territories of the country to players
+4. all players will see the map synchronously, listening to changes on room/map_state
+5. the active player will select a territory to attack
+6. there is going to be an entry in the table attacks with (attacker, defender, territory, question_id)
+7. the attacker and the defender will receive the trivia question (synchronously), but only they can answer, the others can only see
+8. they both send the answer, and it will be check (also time will be counted)
+9. the map will update depending on answers
+10. repeat
+11. when all rounds will be finished, the winner will be the one with the most points
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
