@@ -11,6 +11,7 @@ export default function Play() {
   const router = useRouter();
   const [showMenu, setShowMenu] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -34,6 +35,7 @@ export default function Play() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showMenu]);
 
+
   if (loading || logoutLoading) return <Loading />;
   if (error) return (
     <div className="text-red-600 font-semibold p-4">
@@ -52,6 +54,23 @@ export default function Play() {
       console.error('oups, error during logout:', e);
     } finally {
       setLogoutLoading(false);
+    }
+  };
+
+  const handleCreateRoom = async () => {
+    setCreateLoading(true);
+    try {
+      const res = await fetch('/api/rooms', { method: 'POST' });
+      const data = await res.json();
+      if (data.id) {
+        router.push(`/play/${data.id}`);
+      } else {
+        alert(data.error || 'Could not create room');
+      }
+    } catch (e) {
+      alert('Unexpected error creating room');
+    } finally {
+      setCreateLoading(false);
     }
   };
 
@@ -95,10 +114,12 @@ export default function Play() {
 
       <div className="flex flex-col gap-4 w-full max-w-xs">
         <button
-          className="w-full h-12 px-6 py-2 rounded-lg bg-[#611f69] text-white font-semibold shadow hover:bg-[#4a154b] flex items-center justify-center cursor-pointer text-base gap-2 group"
+          className="w-full h-12 px-6 py-2 rounded-lg bg-[#611f69] text-white font-semibold shadow hover:bg-[#4a154b] flex items-center justify-center cursor-pointer text-base gap-2 group disabled:opacity-60"
+          onClick={handleCreateRoom}
+          disabled={createLoading}
         >
           <PlusCircle className="w-6 h-6 text-white group-hover:scale-110 transition-transform" />
-          Create room
+          {createLoading ? 'Creating...' : 'Create room'}
         </button>
         <button
           className="w-full h-12 px-6 py-2 rounded-lg bg-white text-black border border-gray-300 font-semibold shadow hover:bg-gray-100 flex items-center justify-center cursor-pointer text-base gap-2 group"
