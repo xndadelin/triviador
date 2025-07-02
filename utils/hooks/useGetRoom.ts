@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createClient } from '@/utils/supabase/client';
+
 export default function useGetRoom(roomId: string) {
     const [room, setRoom] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -11,6 +13,8 @@ export default function useGetRoom(roomId: string) {
     }
 
     useEffect(() => {
+        const supabase = createClient(); 
+
         const fetchRoom = async () => {
             try {
                 const response = await fetch(`/api/rooms?room_id=${encodeURIComponent(roomId)}`, {
@@ -35,6 +39,23 @@ export default function useGetRoom(roomId: string) {
             }
         }
         fetchRoom();
+
+        const channel = supabase 
+            .channel('rooms')
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'rooms',
+                filter: `id=eq.${roomId}`
+            }, (payload) => {
+                console.log('Realtime event:', payload);
+                setRoom(payload.new || null);
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, [roomId]);
 
     return { room, loading, error };
