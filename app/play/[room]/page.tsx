@@ -15,6 +15,51 @@ type User = SupabaseUser & {
     full_name?: string;
 };
 
+const counties = [
+    'Satu Mare',
+    'Arad',
+    'Bihor',
+    'Timis',
+    'Mehedinti',
+    'Dolj',
+    'Calarasi',
+    'Teleorman',
+    'Giurgiu',
+    'Constanta',
+    'Olt',
+    'Caras-Severin',
+    'Botosani',
+    'Iasi',
+    'Vaslui',
+    'Galati',
+    'Suceava',
+    'Maramures',
+    'Tulcea',
+    'Cluj',
+    'Bistrita-Nasaud',
+    'Salaj',
+    'Dâmbovita',
+    'Ilfov',
+    'Arges',
+    'Gorj',
+    'Hunedoara',
+    'Vâlcea',
+    'Prahova',
+    'Covasna',
+    'Vrancea',
+    'Buzau',
+    'Brasov',
+    'Sibiu',
+    'Mures',
+    'Harghita',
+    'Neamt',
+    'Bacau',
+    'Alba',
+    'Braila',
+    'Ialomita',
+    'Bucharest',
+];
+
 export default function Room() {
     const { room } = useParams();
     const { room: roomData, loading, error } = useGetRoom(room as string);
@@ -31,6 +76,29 @@ export default function Room() {
     }
     if (usersError) {
         return <Error error={usersError} />;
+    }
+
+    const onHandleStartGame = () => {
+        const number_of_players = users.length;
+        const rounds = 10;
+        if (number_of_players < 2) {
+            alert('oh man, you cant start a game with less than 2 players, lol');
+            return;
+        }
+        const shuffledCounties = [...counties].sort(() => Math.random() - 0.5);
+        const countiesPerUser = Math.floor(counties.length / number_of_players);
+        const remainder = counties.length % number_of_players;
+        const assignments = [];
+        let start = 0;
+        for (let i = 0; i < number_of_players; i++) {
+            const extra = i < remainder ? 1 : 0;
+            const end = start + countiesPerUser + extra;
+            assignments.push({
+                user: users[i],
+                counties: shuffledCounties.slice(start, end),
+            });
+            start = end;
+        }
     }
 
     return (
@@ -136,12 +204,12 @@ export default function Room() {
                     {user?.id === roomData.room.host_id ? (
                         <button
                             className="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-sm hover:bg-green-700 transition flex items-center justify-center gap-2"
-                            onClick={() => alert('clicked lol')}
+                            onClick={() => onHandleStartGame()}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                             </svg>
-                            Start Game
+                            Start game
                         </button>
                     ) : (
                         <div className="px-6 py-4 bg-gray-100 text-gray-600 rounded-lg shadow-sm border border-gray-200">
