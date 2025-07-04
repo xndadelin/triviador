@@ -8,29 +8,26 @@ const COUNTY_CODES: Record<string, string> = {
     "Arges": "ROAG",
     "Bacau": "ROBC",
     "Bihor": "ROBH",
-    "Bistrita-Nasaud": "ROBN",
+    "Bistrita-nasaud": "ROBN",
     "Botosani": "ROBT",
     "Braila": "ROBR",
     "Brasov": "ROBV",
     "Bucharest": "ROB",
     "Buzau": "ROBZ",
     "Calarasi": "ROCL",
-    "Caras-Severin": "ROCS",
+    "Caras-severin": "ROCS",
     "Cluj": "ROCJ",
     "Constanta": "ROCT",
     "Covasna": "ROCV",
     "Dambovita": "RODB",
-    "Dâmbovita": "RODB",
     "Dolj": "RODJ",
     "Galati": "ROGL",
-    "Galați": "ROGL",
     "Giurgiu": "ROGR",
     "Gorj": "ROGJ",
     "Harghita": "ROHR",
     "Hunedoara": "ROHD",
     "Ialomita": "ROIL",
     "Iasi": "ROIS",
-    "Iași": "ROIS",
     "Ilfov": "ROIF",
     "Maramures": "ROMM",
     "Mehedinti": "ROMH",
@@ -39,19 +36,16 @@ const COUNTY_CODES: Record<string, string> = {
     "Olt": "ROOT",
     "Prahova": "ROPH",
     "Salaj": "ROSJ",
-    "Satu Mare": "ROSM",
+    "Satu mare": "ROSM",
     "Sibiu": "ROSB",
     "Suceava": "ROSV",
     "Teleorman": "ROTR",
     "Timis": "ROTM",
-    "Timișoara": "ROTM",
     "Tulcea": "ROTL",
     "Valcea": "ROVL",
-    "Vâlcea": "ROVL",
     "Vaslui": "ROVS",
     "Vrancea": "ROVN",
     "Oradea": "ROBH",
-    "Brașov": "ROBV",
     "Craiova": "RODJ"
 };
 
@@ -85,7 +79,7 @@ type MapProps = {
         question: string;
         options: string[];
     } | null; 
-    onAnswer: (answer: string) => void;
+    onAnswer?: (answer: string) => void;
     onNextQuestion: () => void;
     onEndGame: () => void;
     attackerId: string | null;
@@ -99,7 +93,6 @@ export default function Map(props: MapProps) {
     const { 
         users,
         currentQuestion,
-        onAnswer,
         onNextQuestion,
         onEndGame,
         attackerId,
@@ -213,7 +206,7 @@ export default function Map(props: MapProps) {
     };
 
     return (
-        <div className="relative flex-1">
+        <div className="relative flex-1 flex justify-center items-center h-full max-h-[calc(100vh-120px)]">
             <div className="absolute top-4 right-4 z-40 bg-white bg-opacity-90 p-3 rounded-lg shadow-md border border-gray-200">
                 <h3 className="font-bold text-sm mb-2">Players:</h3>
                 <div className="space-y-1">
@@ -262,7 +255,7 @@ export default function Map(props: MapProps) {
                 </div>
             )}
             <svg
-                className="w-full h-full"
+                className="w-full h-full max-h-[calc(100vh-120px)] max-w-[calc(100vw-40px)]"
                 fill="#6f9c76"
                 height="704"
                 stroke="#ffffff"
@@ -271,6 +264,7 @@ export default function Map(props: MapProps) {
                 strokeWidth={0.5}
                 version="1.2"
                 viewBox="0 0 1000 704"
+                preserveAspectRatio="xMidYMid meet"
                 width="1000"
                 xmlns="http://www.w3.org/2000/svg"
                 >
@@ -280,9 +274,9 @@ export default function Map(props: MapProps) {
                         id="ROSM"
                         name="Satu Mare"
                         fill={getCountyFill("ROSM")}
-                        onMouseOver={(e) => handleMouseOver(e, "Satu Mare")}
+                        onMouseOver={(e) => handleMouseOver(e, "Satu mare")}
                         onMouseOut={handleMouseOut}
-                        onClick={() => handleCountyClick("ROSM", "Satu Mare")}
+                        onClick={() => handleCountyClick("ROSM", "Satu mare")}
                     ></path>
                     <path
                         d="M159 261.9l2.1 0.7 4.4 1.1 32.1-1.8 2.5 0.5 0.6 0.9 0.8 0.8 1.3 0.6 1.3 0.2 1.8-0.1 1.2 0.4 1.6 0.8 1.2 1.3 2.4 0.9 8.5 0.4 2.6 0.5 1.8 0.8 1 1 2.2 1.6 0.7 0.9 0.7 1.6 2.1 5.7 1.2 2.3 1.4 1.8 1.9 1.3 2.4 0.7 1.6 0.8 4.5 3.9 7.2 2.7 0.9 1 0.3 1.2 0.4 1.4 1.1 1.6 1.4 0.8 1.5 0.3 8.7 0.2 7.3 1.6 4.6 0.4 4-0.3 4.7 4.8-6.3 4.7-1.7 3.7-0.9 2.2-2.2 3.7-2 1.8-1.8 1-2.3 0.3-1.8-0.1-5.4-1.3-1.7 0.2-1.3 0.8-2.2 2-0.9 1.4-0.4 1.5 0.2 4.6-0.2 1.9-0.4 2.1-1.4 2.9-0.6 1.7-0.2 1.4 1 3.2 0.3 1.5-0.1 1.6-0.7 2.3-1 2.4-4.5 5.8-1.8 0.9-0.3 0.4-0.5 0.5-0.6 2-0.4 0.5-0.6 0.3-1.6 0.2-3.6 0.9-0.8 0.3-0.7 0.7-0.6 0.7-0.6 0.5-0.9-0.1-2.3-1.3-1.3-0.2-2 0.2-1.5 0-1.4-0.3-1-1-0.7-0.8-0.8-0.6-1.6-0.8-0.7-0.5-0.4-0.7-0.3-1-0.5-0.7-1-0.5-3.8-0.3-1.7-0.5-1.2-1.1-0.8-1-1-0.7-1.4-0.5-2.3 0-1.2 0.2-0.7 0.4-0.4 0.7-0.3 0.9-0.6 3.1-0.4 0.7-0.5 0.5-0.8 0.1-2.1 0-1-0.3-0.8-0.8-0.7-0.5-0.5 0-0.5 0.8-0.1 1-0.1 1.1 0.2 1.9-0.2 0.7-0.4 0.2-0.6-0.3-0.8-1-1.2-1.9-0.8-0.8-1.1-0.7-3.1-1.5-1.4 0.1-0.8 0.4-0.7 0.9-1.3 2.3-0.9 2.2-0.6 0.7-0.7 0-0.8-0.8-0.4-0.9-0.6-0.7-1.3-0.9-0.4-0.4-0.1-0.6 0.2-0.7 0.3-0.7 0.1-0.8-0.3-0.9-0.9-1.2-1.9-1.6-2.2-2.2-1-0.6-1-0.3-2.7 0.4-0.9-0.3-0.7-1-0.2-1.1 0-1.1-0.1-0.9-0.8-0.8-1.5-0.5-3.2-0.4-1.6 0.2-1 0.5-0.2 0.8 0 1-0.1 0.9-0.4 0.9-0.6 0.7-2.6 2-2.1 2.2-0.7 0.3-0.6-0.2-1.4-1.6-1-0.5-1.6 0-1.4 0.2-1.1 0.5-2.2 1.9-1.4 0-1.6-0.9-2.5-2.5-0.8-1.7-0.1-1.3-0.2-0.5-0.7-0.3-1.5 0.2-0.9 0.5-0.9 0.8-0.4 0.8-0.2 0.8 0 1.6-0.2 0.7-0.4 0.7-0.7 0.4-1 0.1-1.4-0.3-1.2-0.7-1.3-1.6-0.2-1 0.2-1.6-0.4-0.7-1-0.6-2.1-0.6-1.1 0.1-1.8 0.5-0.9 0-5.9-1.1-1.4-0.5-1.2-0.8-1.3-1.9-1-2.7-3.4-3.5-13.6-9.6-1.4-0.5 0.1-1.7 0.5-1 0.7-0.3 0.9 0.3 0.9 0.2 0.8-0.8 0-1.1-0.9-3.1 0-1.3 0.4-0.8 3.8-3.1 0.8-0.5 1.1-0.6 2-0.5 1.9 0 0.9 0.5 1.8 1.5 0.7 0.4 1-0.1 1.4-0.8 0.7-0.2 1.7 0.4 3.6 1.5 1.9-0.1 0.8-0.3 0.9 0 0.7 0.3 0.7 0.8 1.9 1.7 1.7-0.7 4.6-5.6 0.6-0.3 2.8 0 0.9-0.7 1.1-2.1 0.9-2.7 0.4-6.2 0.9-3 1.6-1.9 1.9-0.7 4.1-0.2 2.2-1.7-0.6-3-2.8-5.4 0.2-2.9 1.4-2.2 1.7-2.1 1.1-2.6 0.4-5.3 0.6-2.7 1.4-1.8 2.1-0.5 3.5 0.3 2.1-1.1 2-2.7 0.7-1.8z"
@@ -392,7 +386,7 @@ export default function Map(props: MapProps) {
                         fill={getCountyFill("ROCS")}
                         onMouseOver={(e) => handleMouseOver(e, "Caras-Severin")}
                         onMouseOut={handleMouseOut}
-                        onClick={() => handleCountyClick("ROCS", "Caras-Severin")}
+                        onClick={() => handleCountyClick("ROCS", "Caras-severin")}
                     >
                     </path>
                     <path
@@ -479,8 +473,8 @@ export default function Map(props: MapProps) {
                         id="ROBN"
                         name="Bistrita-Nasaud"
                         fill={getCountyFill("ROBN")}
-                        onClick={() => handleCountyClick("ROBN", "Bistrita-Nasaud")}
-                        onMouseOver={(e) => handleMouseOver(e, 'Bistrita-Nasaud')}
+                        onClick={() => handleCountyClick("ROBN", "Bistrita-nasaud")}
+                        onMouseOver={(e) => handleMouseOver(e, 'Bistrita-nasaud')}
                         onMouseOut={handleMouseOut}
                     >
                     </path>

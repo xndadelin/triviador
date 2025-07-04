@@ -31,7 +31,6 @@ type GameMapProps = {
         question: string;
         options: string[];
     } | null;
-    onAnswer: (answer: string) => void;
     onNextQuestion: (countyId?: string) => void;
     onEndGame: () => void;
     attackerId: string | null;
@@ -45,101 +44,41 @@ type GameMapProps = {
 function GameMap(props: GameMapProps) {
     const { 
         users, 
-        currentQuestion, 
-        onAnswer, 
         onNextQuestion, 
         onEndGame, 
         attackerId, 
         defenderId, 
         countyOwners,
-        timeLeft = 15,
         selectedCounty,
         map_state = []
     } = props;
     
-    const isQuestionPhase = !!currentQuestion;
-    
-    if (!isQuestionPhase) {
-        return (
-            <div className="flex-1 flex flex-col">
-                <div className="p-6 flex-1 flex flex-col">
-                    <div className="mb-6 bg-purple-50 p-3 rounded-lg flex items-center">
-                        <div className="text-purple-700 font-semibold">
-                            {users.find(u => u.id === attackerId)?.name || 'Waiting for player'}'s turn
-                        </div>
-                        <div className="ml-auto text-sm text-gray-600">
-                            Select a territory to attack
-                        </div>
+    return (
+        <div className="h-full w-full flex justify-center items-center">
+            <Map 
+                users={users}
+                currentQuestion={null}
+                onNextQuestion={onNextQuestion}
+                onEndGame={onEndGame}
+                attackerId={attackerId}
+                defenderId={defenderId}
+                countyOwners={countyOwners}
+                selectedCounty={selectedCounty}
+                map_state={map_state}
+            />
+            
+            {!props.currentQuestion && attackerId && (
+                <div className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-purple-50 p-1.5 px-2 rounded-lg flex items-center shadow-sm text-sm">
+                    <div className="text-purple-700 font-semibold">
+                        {users.find(u => u.id === attackerId)?.name || 'Waiting for player'}'s turn
                     </div>
-                    <div className="flex-1 relative">
-                        <Map 
-                            users={users}
-                            currentQuestion={null}
-                            onAnswer={onAnswer}
-                            onNextQuestion={onNextQuestion}
-                            onEndGame={onEndGame}
-                            attackerId={attackerId}
-                            defenderId={defenderId}
-                            countyOwners={countyOwners}
-                            selectedCounty={selectedCounty}
-                            map_state={map_state}
-                        />
+                    <div className="ml-2 text-xs text-gray-600">
+                        Select a territory to attack
                     </div>
                 </div>
-            </div>
-        );
-    } else {
-        return (
-            <div className="p-6 flex-1 flex flex-col">
-                <div className="mb-6 bg-purple-50 p-3 rounded-lg">
-                    <div className="flex items-center justify-between">
-                        <div className="text-purple-700 font-semibold">
-                            Battle for: <span className="font-bold">{selectedCounty}</span>
-                        </div>
-                        <div className="text-sm text-red-600 font-bold">
-                            Time: 00:{timeLeft.toString().padStart(2, '0')}
-                        </div>
-                    </div>
-                    
-                    <div className="mt-2 flex items-center justify-center gap-2 text-sm">
-                        <span className="font-medium">
-                            {users.find(u => u.id === attackerId)?.name || 'Attacker'}
-                        </span>
-                        <span>vs</span>
-                        <span className="font-medium">
-                            {users.find(u => u.id === defenderId)?.name || 'Defender'}
-                        </span>
-                    </div>
-                </div>
-                
-                <div className="mb-8 text-center">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                        {currentQuestion.question}
-                    </h2>
-                    <div className="w-24 h-1 bg-purple-300 mx-auto"></div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 mt-auto">
-                    {currentQuestion.options.map((option, index) => (
-                        <button 
-                            key={index}
-                            onClick={() => onAnswer(option)}
-                            className="p-4 bg-white border-2 border-purple-300 rounded-lg text-lg font-medium hover:bg-purple-50 hover:border-purple-500 transition-colors"
-                        >
-                            {option}
-                        </button>
-                    ))}
-                </div>
-                
-                <button 
-                    onClick={onEndGame}
-                    className="mt-8 p-2 text-sm text-gray-600 hover:text-red-600"
-                >
-                    End Game
-                </button>
-            </div>
-        );
-    }
+            )}
+        </div>
+    );
 }
 
 export default function Live() {
@@ -163,6 +102,7 @@ export default function Live() {
         selectedCounty: string | null;
         gameStarted: boolean;
         welcomeMessage: boolean;
+        showLeaderboard: boolean;
         notification: {
             message: string;
             type: 'success' | 'error' | 'info';
@@ -177,6 +117,7 @@ export default function Live() {
         selectedCounty: null,
         gameStarted: false,
         welcomeMessage: true,
+        showLeaderboard: false,
         notification: {
             message: '',
             type: 'info',
@@ -399,14 +340,14 @@ export default function Live() {
             'ROAG': 'Arges',
             'ROBC': 'Bacau',
             'ROBH': 'Bihor',
-            'ROBN': 'Bistrita-Nasaud',
+            'ROBN': 'Bistrita-nasaud',
             'ROBT': 'Botosani',
             'ROBR': 'Braila',
             'ROBV': 'Brasov',
             'ROB': 'București',
             'ROBZ': 'Buzau',
             'ROCL': 'Calarasi',
-            'ROCS': 'Caras-Severin',
+            'ROCS': 'Caras-severin',
             'ROCJ': 'Cluj',
             'ROCT': 'Constanta',
             'ROCV': 'Covasna',
@@ -427,7 +368,7 @@ export default function Live() {
             'ROOT': 'Olt',
             'ROPH': 'Prahova',
             'ROSJ': 'Salaj',
-            'ROSM': 'Satu Mare',
+            'ROSM': 'Satu mare',
             'ROSB': 'Sibiu',
             'ROSV': 'Suceava',
             'ROTR': 'Teleorman',
@@ -453,7 +394,7 @@ export default function Live() {
             },
             {
                 question: 'Who wrote the novel "Ion"?',
-                options: ['Liviu Rebreanu', 'Mihail Sadoveanu', 'Ion Creangă', 'George Coșbuc']
+                options: ['Liviu rebreanu', 'Mihail sadoveanu', 'Ion creangă', 'George coșbuc']
             },
             {
                 question: 'In what year did Romania join the European Union?',
@@ -493,8 +434,7 @@ export default function Live() {
 
             setGameState(prev => ({
                 ...prev, 
-                notification: {
-                    message: `Game over! ${winnerUser?.name || 'Nobody'} wins with ${winnerUser?.counties.length || 0} territories!`,
+                notification: {                        message: `Game over! ${winnerUser?.name || 'Nobody'} wins with ${winnerUser?.counties.length || 0} territories!`,
                     type: 'success',
                     visible: true
                 }
@@ -523,31 +463,55 @@ export default function Live() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-yellow-100 flex flex-col">
-            <div className="bg-white shadow-md p-3 flex items-center justify-between">
+        <div className="min-h-screen bg-gradient-to-br from-purple-100 via-white to-yellow-100">
+            <div className="fixed inset-0 z-0">
+                <GameMap
+                    users={mappedUsers}
+                    currentQuestion={null}
+                    onNextQuestion={handleNextQuestion}
+                    onEndGame={handleEndGame}
+                    attackerId={gameState.attackerId}
+                    defenderId={gameState.defenderId}
+                    countyOwners={gameState.countyOwners}
+                    timeLeft={gameState.timeLeft}
+                    selectedCounty={gameState.selectedCounty}
+                    map_state={mapState}
+                />
+            </div>
+
+            <div className="fixed top-0 left-0 right-0 bg-white bg-opacity-90 shadow-sm p-1.5 flex items-center justify-between z-10 text-sm">
                 <button 
                     onClick={() => router.push(`/play/${room}`)}
                     className="flex items-center text-gray-600 hover:text-purple-700"
                 >
-                    <ArrowLeft className="w-5 h-5 mr-1" />
-                    <span>Back to room</span>
+                    <ArrowLeft className="w-4 h-4 mr-0.5" />
+                    <span>Back</span>
                 </button>
                 
-                <div className="flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-purple-700" />
-                    <span className="font-semibold text-red-600">
-                        Time: 00:{gameState.timeLeft.toString().padStart(2, '0')}
-                    </span>
+                <div className="text-base font-bold text-purple-800">
+                    {roomData?.room?.name || 'Game room'}
                 </div>
                 
-                <div className="text-lg font-bold text-purple-800">
-                    {roomData?.room?.name || 'Game Room'}
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                        <Clock className="w-4 h-4 text-purple-700" />
+                        <span className="font-semibold text-red-600">
+                            {gameState.timeLeft.toString().padStart(2, '0')}s
+                        </span>
+                    </div>
+                    <button 
+                        onClick={() => setGameState(prev => ({ ...prev, showLeaderboard: !prev.showLeaderboard }))}
+                        className="bg-purple-100 hover:bg-purple-200 text-purple-800 py-1 px-1.5 rounded-md flex items-center gap-1 text-xs"
+                    >
+                        <User className="w-3 h-3" />
+                        <span>Players</span>
+                    </button>
                 </div>
             </div>
             
             {gameState.notification.visible && (
                 <div 
-                    className={`mx-4 mt-4 p-3 rounded-md flex items-center justify-between ${
+                    className={`fixed top-10 left-1/2 transform -translate-x-1/2 p-2 text-sm rounded-md flex items-center justify-between shadow-lg z-20 max-w-md w-full ${
                         gameState.notification.type === 'success' ? 'bg-green-50 text-green-700' : 
                         gameState.notification.type === 'error' ? 'bg-red-50 text-red-700' : 
                         'bg-blue-50 text-blue-700'
@@ -559,96 +523,144 @@ export default function Live() {
                             ...prev,
                             notification: { ...prev.notification, visible: false }
                         }))}
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-gray-400 hover:text-gray-600 ml-1"
                     >
                         &times;
                     </button>
                 </div>
             )}
 
-            <div className="flex flex-1">
-                <div className="w-72 bg-white shadow-md m-4 rounded-lg p-4 overflow-auto max-h-[calc(100vh-8rem)]">
-                    <h3 className="font-bold text-lg mb-3 text-purple-900">Players</h3>
-                    <div className="space-y-3">
-                        {mappedUsers.map(user => (
-                            <div 
-                                key={user.id} 
-                                className={`flex flex-col p-3 rounded-md border ${user.id === gameState.attackerId ? 'bg-purple-50 border-purple-300' : user.id === gameState.defenderId ? 'bg-blue-50 border-blue-300' : 'border-gray-200'}`}
-                                style={{borderLeftWidth: '4px', borderLeftColor: user.color || '#808080'}}
+            {gameState.showLeaderboard && (
+                <div className="fixed inset-0 bg-black bg-opacity-30 flex items-start justify-end z-30" onClick={() => setGameState(prev => ({ ...prev, showLeaderboard: false }))}>
+                    <div className="w-72 bg-white shadow-xl h-screen overflow-auto p-3 pt-10" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center mb-3 sticky top-0 bg-white pt-1 pb-2 border-b">
+                            <h3 className="font-bold text-base text-purple-900">Players</h3>
+                            <button 
+                                onClick={() => setGameState(prev => ({ ...prev, showLeaderboard: false }))}
+                                className="text-gray-500 hover:text-gray-700"
                             >
-                                <div className="flex items-center gap-2">
-                                    <User className="w-8 h-8 text-gray-500 p-1 bg-gray-100 rounded-full" />
-                                    <span className="font-medium">
-                                        {user.name}
-                                        {user.id === gameState.attackerId && ' (Attacker)'}
-                                        {user.id === gameState.defenderId && ' (Defender)'}
-                                    </span>
+                                &times;
+                            </button>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                            {mappedUsers.map(user => (
+                                <div 
+                                    key={user.id} 
+                                    className={`flex flex-col p-2 rounded-md border ${user.id === gameState.attackerId ? 'bg-purple-50 border-purple-300' : user.id === gameState.defenderId ? 'bg-blue-50 border-blue-300' : 'border-gray-200'}`}
+                                    style={{borderLeftWidth: '3px', borderLeftColor: user.color || '#808080'}}
+                                >
+                                    <div className="flex items-center gap-1.5">
+                                        <User className="w-6 h-6 text-gray-500 p-1 bg-gray-100 rounded-full" />
+                                        <span className="font-medium text-xs">
+                                            {user.name}
+                                            {user.id === gameState.attackerId && ' (Attacker)'}
+                                            {user.id === gameState.defenderId && ' (Defender)'}
+                                        </span>
+                                        
+                                        <div className="ml-auto bg-purple-100 text-purple-800 text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                                            {user.score}
+                                        </div>
+                                    </div>
                                     
-                                    <div className="ml-auto bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded-full">
-                                        {user.score}
+                                    <div className="mt-1 ml-7">
+                                        <div className="text-xs text-gray-500">Territories ({user.counties?.length || 0}):</div>
+                                        <div className="flex flex-wrap gap-1 mt-0.5 max-h-16 overflow-y-auto">
+                                            {user.counties && user.counties.length > 0 ? (
+                                                user.counties.map(county => (
+                                                    <span 
+                                                        key={county} 
+                                                        className="text-xs bg-gray-100 px-1 py-0 rounded"
+                                                        style={user.color ? { backgroundColor: `${user.color}30` } : {}}
+                                                    >
+                                                        {county}
+                                                    </span>
+                                                ))
+                                            ) : (
+                                                <span className="text-xs text-gray-400 italic">No territories yet</span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                                
-                                <div className="mt-2 ml-10">
-                                    <div className="text-xs text-gray-500">Territories ({user.counties?.length || 0}):</div>
-                                    <div className="flex flex-wrap gap-1 mt-1 max-h-24 overflow-y-auto">
-                                        {user.counties && user.counties.length > 0 ? (
-                                            user.counties.map(county => (
-                                                <span 
-                                                    key={county} 
-                                                    className="text-xs bg-gray-100 px-1.5 py-0.5 rounded"
-                                                    style={user.color ? { backgroundColor: `${user.color}30` } : {}}
-                                                >
-                                                    {county}
-                                                </span>
-                                            ))
-                                        ) : (
-                                            <span className="text-xs text-gray-400 italic">No territories yet</span>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
                 </div>
+            )}
 
-                <div className="flex-1 m-4 bg-white rounded-lg shadow-md flex flex-col relative">
-                    {gameState.welcomeMessage && (
-                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-                            <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
-                                <h3 className="text-2xl font-bold text-purple-800 mb-4">Welcome to Triviador!</h3>
-                                <p className="mb-4">
-                                    This is a map conquest game where you compete with other players to conquer territories by answering trivia questions.
-                                </p>
-                                <ul className="list-disc pl-5 mb-4 space-y-1">
-                                    <li>Click on territories to claim them</li>
-                                    <li>Answer trivia questions correctly to win territories</li>
-                                    <li>The player with the most territories wins!</li>
-                                </ul>
-                                <button 
-                                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition"
-                                    onClick={() => setGameState(prev => ({ ...prev, welcomeMessage: false, gameStarted: true }))}
-                                >
-                                    Start Game
-                                </button>
+            {gameState.currentQuestion && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-40">
+                    <div className="bg-white rounded-lg shadow-xl p-4 max-w-xl w-full mx-4 transform transition-all">
+                        <div className="mb-3 bg-purple-50 p-2 rounded-md">
+                            <div className="flex items-center justify-between">
+                                <div className="text-purple-700 font-semibold text-sm">
+                                    Battle for: <span className="font-bold">{gameState.selectedCounty}</span>
+                                </div>
+                                <div className="text-xs text-red-600 font-bold">
+                                    Time: {gameState.timeLeft.toString().padStart(2, '0')}s
+                                </div>
+                            </div>
+                            
+                            <div className="mt-1 flex items-center justify-center gap-1 text-xs">
+                                <span className="font-medium">
+                                    {mappedUsers.find(u => u.id === gameState.attackerId)?.name || 'Attacker'}
+                                </span>
+                                <span>vs</span>
+                                <span className="font-medium">
+                                    {mappedUsers.find(u => u.id === gameState.defenderId)?.name || 'Defender'}
+                                </span>
                             </div>
                         </div>
-                    )}
-                    <GameMap
-                        users={mappedUsers}
-                        currentQuestion={gameState.currentQuestion}
-                        onAnswer={handleAnswer}
-                        onNextQuestion={handleNextQuestion}
-                        onEndGame={handleEndGame}
-                        attackerId={gameState.attackerId}
-                        defenderId={gameState.defenderId}
-                        countyOwners={gameState.countyOwners}
-                        timeLeft={gameState.timeLeft}
-                        selectedCounty={gameState.selectedCounty}
-                        map_state={mapState}
-                    />
+                        
+                        <div className="mb-4 text-center">
+                            <h2 className="text-lg font-bold text-gray-800 mb-2">
+                                {gameState.currentQuestion.question}
+                            </h2>
+                            <div className="w-16 h-0.5 bg-purple-300 mx-auto"></div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-auto">
+                            {gameState.currentQuestion.options.map((option, index) => (
+                                <button 
+                                    key={index}
+                                    onClick={() => handleAnswer(option)}
+                                    className="p-2 bg-white border border-purple-300 rounded-md text-base font-medium hover:bg-purple-50 hover:border-purple-500 transition-colors"
+                                >
+                                    {option}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
+
+            {gameState.welcomeMessage && (
+                <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+                    <div className="bg-white p-4 rounded-md shadow-lg max-w-sm w-full mx-4">
+                        <h3 className="text-xl font-bold text-purple-800 mb-3">Welcome to Triviador!</h3>
+                        <p className="mb-3 text-sm">
+                            This is a map conquest game where you compete with other players to conquer territories by answering trivia questions.
+                        </p>
+                        <ul className="list-disc pl-5 mb-3 space-y-0.5 text-sm">
+                            <li>Click on territories to claim them</li>
+                            <li>Answer trivia questions correctly to win territories</li>
+                            <li>The player with the most territories wins!</li>
+                        </ul>
+                        <button 
+                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md text-sm transition"
+                            onClick={() => setGameState(prev => ({ ...prev, welcomeMessage: false, gameStarted: true }))}
+                        >
+                            Start game
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <button 
+                onClick={handleEndGame}
+                className="fixed bottom-2 right-2 bg-white hover:bg-red-50 text-red-600 font-medium px-2 py-1 text-xs rounded-md shadow-sm z-10 border border-red-200 opacity-80 hover:opacity-100"
+            >
+                End game
+            </button>
         </div>
     );
 }
