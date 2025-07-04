@@ -8,6 +8,8 @@ import { Loading } from "@/components/Loading";
 import { useGetUser } from "@/utils/hooks/useGetUser";
 import useGetUserById from '@/utils/hooks/useGetUserById';
 import { User as SupabaseUser } from '@supabase/supabase-js';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type User = SupabaseUser & {
     avatar_url?: string;
@@ -67,6 +69,8 @@ export default function Room() {
     const { user, error: errorUser, loading: loadingError } = useGetUser()
     const hostId = roomData?.room?.host_id;
     const { user: host, loading: hostLoading, error: hostError } = useGetUserById(hostId || '') as { user: User | null, loading: boolean, error: string | null };
+    const [isAssigning, setIsAssigning] = useState(false);
+    const router = useRouter();
 
     if (loading || usersLoading) {
         return <Loading />;
@@ -78,11 +82,12 @@ export default function Room() {
         return <Error error={usersError} />;
     }
 
-    const onHandleStartGame = () => {
+    const onHandleStartGame = async () => {
+        setIsAssigning(true);
         const number_of_players = users.length;
-        const rounds = 10;
         if (number_of_players < 2) {
             alert('oh man, you cant start a game with less than 2 players, lol');
+            setIsAssigning(false);
             return;
         }
         const shuffledCounties = [...counties].sort(() => Math.random() - 0.5);
@@ -99,6 +104,28 @@ export default function Room() {
             });
             start = end;
         }
+        try {
+            const response = await fetch('/api/rooms/attribute_counties', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    room_id: roomData.room.id,
+                    assignments: assignments.map(a => ({ user_id: a.user.id, counties: a.counties }))
+                })
+            });
+            if (!response.ok) {
+                const data = await response.json();
+                alert('error assigning counties: ' + (data.error || response.statusText));
+                setIsAssigning(false);
+                return;
+            }
+            router.push(`/play/${roomData.room.id}/game`);
+        } catch (err: any) {
+            alert('network error while assigning counties: ' + (err && err.message ? err.message : 'Unknown error'));
+            setIsAssigning(false);
+            return;
+        }
+        setIsAssigning(false);
     }
 
     return (
@@ -201,26 +228,22 @@ export default function Room() {
                     </div>
                 </div>
                 <div className="mt-8 flex justify-center">
-                    {user?.id === roomData.room.host_id ? (
+                    {user?.id === roomData.room.host_id && roomData.room.status !== 'active' ? (
                         <button
-                            className="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-sm hover:bg-green-700 transition flex items-center justify-center gap-2"
+                            className="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-sm hover:bg-green-700 transition flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                             onClick={() => onHandleStartGame()}
+                            disabled={isAssigning}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-                            </svg>
-                            Start game
-                        </button>
-                    ) : (
-                        <div className="px-6 py-4 bg-gray-100 text-gray-600 rounded-lg shadow-sm border border-gray-200">
-                            <div className="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+                            {isAssigning ? (
+                                <svg className="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
                                 </svg>
-                                <span className="font-medium">Waiting for host to start the game...</span>
-                            </div>
-                        </div>
-                    )}
+                            )}
+                            {isAssigning ? 'Assigning...' : 'Start game'}
+                        </button>
+                    ) : null}
                 </div>
             </div>
         </div>
