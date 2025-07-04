@@ -11,7 +11,8 @@ import { useGetUser } from "@/utils/hooks/useGetUser";
 import { useEffect } from "react";
 import { useMapState, CountyOwner } from "@/utils/hooks/useMapState";
 import Map from "@/components/Map";
-import { createClient } from "@/utils/supabase/client";   
+import { createClient } from "@/utils/supabase/client";
+import { getRandomQuestion } from "@/utils/questions";
 
 type MapStateUser = {
     user_id: string;
@@ -408,30 +409,8 @@ export default function Live() {
             selectedCountyName = countyNames[randomCountyCode];
         }
 
-        const questions = [
-            {
-                question: 'What is the capital of Romania?',
-                options: ['Bucharest', 'Paris', 'Berlin', 'Madrid']
-            },
-            {
-                question: 'Who wrote the novel "Ion"?',
-                options: ['Liviu rebreanu', 'Mihail sadoveanu', 'Ion creangă', 'George coșbuc']
-            },
-            {
-                question: 'In what year did Romania join the European Union?',
-                options: ['2007', '2004', '2010', '2000']
-            },
-            {
-                question: 'What is the largest river in Romania?',
-                options: ['Danube', 'Olt', 'Mures', 'Siret']
-            },
-            {
-                question: 'Which mountain range runs through Romania?',
-                options: ['Carpathians', 'Alps', 'Pyrenees', 'Urals']
-            }
-        ];
-        
-        const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+        // Get a random question from our question bank
+        const randomQuestion = getRandomQuestion();
         
         setGameState(prev => ({
             ...prev,
