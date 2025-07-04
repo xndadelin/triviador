@@ -80,13 +80,17 @@ type MapProps = {
         options: string[];
     } | null; 
     onAnswer?: (answer: string) => void;
-    onNextQuestion: () => void;
+    onNextQuestion: (countyId?: string) => void;
     onEndGame: () => void;
     attackerId: string | null;
     defenderId: string | null;
     countyOwners?: Record<string, string>;
     selectedCounty?: string | null;
     map_state?: MapStateUser[];
+    currentUser?: {
+        id: string;
+        name?: string;
+    } | null;
 }
 
 export default function Map(props: MapProps) {
@@ -99,7 +103,8 @@ export default function Map(props: MapProps) {
         defenderId,
         countyOwners = {},
         selectedCounty,
-        map_state = []
+        map_state = [],
+        currentUser
     } = props;
     const [tooltip, setTooltip] = useState<{ visible: boolean, x: number, y: number, name: string }>({ visible: false, x: 0, y: 0, name: '' });
     const [activeCounty, setActiveCounty] = useState<string | null>(null);
@@ -156,9 +161,27 @@ export default function Map(props: MapProps) {
     };
     
     const handleCountyClick = (countyId: string, countyName: string) => {
+        if (currentUser && attackerId !== currentUser.id) {
+            return;
+        }
+        
+        const countyOwner = Object.keys(COUNTY_CODES).find(name => COUNTY_CODES[name] === countyId);
+        if (countyOwner) {
+            const normalizedCountyName = countyOwner.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            
+            const attackerState = map_state.find(state => state.user_id === attackerId);
+            if (attackerState && attackerState.counties.some(county => {
+                const normalizedCounty = county.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                return normalizedCountyName === normalizedCounty || 
+                    normalizedCountyName.toLowerCase() === normalizedCounty.toLowerCase();
+            })) {
+                return;
+            }
+        }
+
         if (!isQuestionPhase && onNextQuestion) {
             setActiveCounty(countyId);
-            onNextQuestion();
+            onNextQuestion(countyId);
         }
     };    
     

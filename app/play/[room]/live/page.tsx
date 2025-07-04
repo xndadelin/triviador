@@ -39,6 +39,10 @@ type GameMapProps = {
     timeLeft?: number;
     selectedCounty: string | null;
     map_state?: MapStateUser[];
+    currentUser?: {
+        id: string;
+        name?: string;
+    } | null;
 };
 
 function GameMap(props: GameMapProps) {
@@ -50,12 +54,12 @@ function GameMap(props: GameMapProps) {
         defenderId, 
         countyOwners,
         selectedCounty,
-        map_state = []
+        map_state = [],
+        currentUser
     } = props;
     
     return (
-        <div className="h-full w-full flex justify-center items-center">
-            <Map 
+        <div className="h-full w-full flex justify-center items-center">                <Map 
                 users={users}
                 currentQuestion={null}
                 onNextQuestion={onNextQuestion}
@@ -65,6 +69,7 @@ function GameMap(props: GameMapProps) {
                 countyOwners={countyOwners}
                 selectedCounty={selectedCounty}
                 map_state={map_state}
+                currentUser={currentUser}
             />
             
             {!props.currentQuestion && attackerId && (
@@ -73,7 +78,9 @@ function GameMap(props: GameMapProps) {
                         {users.find(u => u.id === attackerId)?.name || 'Waiting for player'}'s turn
                     </div>
                     <div className="ml-2 text-xs text-gray-600">
-                        Select a territory to attack
+                        {props.currentUser && props.currentUser.id === attackerId 
+                            ? 'Select a territory to attack' 
+                            : 'Waiting for player to select a territory'}
                     </div>
                 </div>
             )}
@@ -224,116 +231,129 @@ export default function Live() {
     }, [mapState, realTimeOwners, mapLoading, mappedUsers, playerColors]);
 
     const handleAnswer = async (answer: string) => {
+        if (!gameState.selectedCounty || !gameState.attackerId) {
+            return;
+        }
         
-        if (gameState.selectedCounty && gameState.attackerId) {
-            const isCorrect = Math.random() > 0.3;
-            const currentAttacker = mappedUsers.find(user => user.id === gameState.attackerId);                
-            if (isCorrect) {
-                    setGameState(prev => ({
-                        ...prev,
-                        countyOwners: {
-                            ...prev.countyOwners,
-                            [prev.selectedCounty as string]: prev.attackerId as string
-                        },
-                        currentQuestion: null,
-                        timeLeft: 15,
-                        notification: {
-                            message: `${currentAttacker?.name} has conquered ${gameState.selectedCounty}!`,
-                            type: 'success',
-                            visible: true
-                        }
-                    }));
-                    
-                    setMappedUsers(prev => {
-                        const newUsers = [...prev];
-                        const attackerIndex = newUsers.findIndex(user => user.id === gameState.attackerId);
-                        if (attackerIndex !== -1) {                                newUsers[attackerIndex] = {
-                                ...newUsers[attackerIndex],
-                                score: newUsers[attackerIndex].score + 1,
-                                counties: [...(newUsers[attackerIndex].counties || []), gameState.selectedCounty as string]
-                            };
-                        }
-                        return newUsers;
-                    });
-            } else {
+        if (currentUser && gameState.attackerId !== currentUser.id) {
+            setGameState(prev => ({
+                ...prev,
+                notification: {
+                    message: "It's not your turn!",
+                    type: 'error',
+                    visible: true
+                }
+            }));
+            return;
+        }
+        
+        const isCorrect = Math.random() > 0.3;
+        const currentAttacker = mappedUsers.find(user => user.id === gameState.attackerId);                
+        
+        if (isCorrect) {
+            setGameState(prev => ({
+                ...prev,
+                countyOwners: {
+                    ...prev.countyOwners,
+                    [prev.selectedCounty as string]: prev.attackerId as string
+                },
+                currentQuestion: null,
+                timeLeft: 15,
+                notification: {
+                    message: `${currentAttacker?.name} has conquered ${gameState.selectedCounty}!`,
+                    type: 'success',
+                    visible: true
+                }
+            }));
+            
+            setMappedUsers(prev => {
+                const newUsers = [...prev];
+                const attackerIndex = newUsers.findIndex(user => user.id === gameState.attackerId);
+                if (attackerIndex !== -1) {
+                    newUsers[attackerIndex] = {
+                        ...newUsers[attackerIndex],
+                        score: newUsers[attackerIndex].score + 1,
+                        counties: [...(newUsers[attackerIndex].counties || []), gameState.selectedCounty as string]
+                    };
+                }
+                return newUsers;
+            });
+        } else {
+            setGameState(prev => ({
+                ...prev,
+                currentQuestion: null,
+                timeLeft: 15,
+                notification: {
+                    message: `${currentAttacker?.name} failed to answer correctly!`,
+                    type: 'error',
+                    visible: true
+                }
+            }));
+        }
+        
+        if (roomUsers && roomUsers.length > 1) {
+            const currentAttackerIndex = roomUsers.findIndex(user => user.id === gameState.attackerId);
+            const nextAttackerIndex = (currentAttackerIndex + 1) % roomUsers.length;
+            const nextDefenderIndex = (nextAttackerIndex + 1) % roomUsers.length;
+            
+            setTimeout(() => {
                 setGameState(prev => ({
                     ...prev,
-                    currentQuestion: null,
-                    timeLeft: 15,
+                    attackerId: roomUsers[nextAttackerIndex].id,
+                    defenderId: roomUsers[nextDefenderIndex].id,
                     notification: {
-                        message: `${currentAttacker?.name} failed to answer correctly!`,
-                        type: 'error',
+                        message: `It's ${roomUsers[nextAttackerIndex].name || 'Next player'}'s turn!`,
+                        type: 'info',
                         visible: true
                     }
                 }));
-            }
-            
-
-            if (roomUsers && roomUsers.length > 1) {
-                const currentAttackerIndex = roomUsers.findIndex(user => user.id === gameState.attackerId);
-                const nextAttackerIndex = (currentAttackerIndex + 1) % roomUsers.length;
-                const nextDefenderIndex = (nextAttackerIndex + 1) % roomUsers.length;
+            }, 2000);
+        }
+        
+        if (isCorrect) {
+            try {
+                const supabase = createClient();
+                const { data: roomData, error: fetchError } = await supabase
+                    .from("rooms")
+                    .select("map_state")
+                    .eq("id", room)
+                    .single();
                 
-                setTimeout(() => {
-                    setGameState(prev => ({
-                        ...prev,
-                        attackerId: roomUsers[nextAttackerIndex].id,
-                        defenderId: roomUsers[nextDefenderIndex].id,
-                        notification: {
-                            message: `It's ${roomUsers[nextAttackerIndex].name || 'Next player'}'s turn!`,
-                            type: 'info',
-                            visible: true
-                        }
-                    }));
-                }, 2000);
-            }
-            
-            if (isCorrect) {
-                try {
-                    const supabase = createClient();
-                    const { data: roomData, error: fetchError } = await supabase
-                        .from("rooms")
-                        .select("map_state")
-                        .eq("id", room)
-                        .single();
-                    
-                    if (fetchError) throw fetchError;
+                if (fetchError) throw fetchError;
 
-                    const currentMapState = roomData?.map_state || [];
-                    const updatedMapState = [...currentMapState];
+                const currentMapState = roomData?.map_state || [];
+                const updatedMapState = [...currentMapState];
 
-                    const attackerIndex = updatedMapState.findIndex(
-                        (state: MapStateUser) => state.user_id === gameState.attackerId
-                    );
-                    
-                    if (attackerIndex >= 0) {
-                        if (!updatedMapState[attackerIndex].counties.includes(gameState.selectedCounty as string)) {
-                            updatedMapState[attackerIndex].counties.push(gameState.selectedCounty as string);
-                        }
-                    } else {
-                        updatedMapState.push({
-                            user_id: gameState.attackerId as string,
-                            counties: [gameState.selectedCounty as string]
-                        });
+                const attackerIndex = updatedMapState.findIndex(
+                    (state: MapStateUser) => state.user_id === gameState.attackerId
+                );
+                
+                if (attackerIndex >= 0) {
+                    if (!updatedMapState[attackerIndex].counties.includes(gameState.selectedCounty as string)) {
+                        updatedMapState[attackerIndex].counties.push(gameState.selectedCounty as string);
                     }
-
-                    const { error: updateError } = await supabase
-                        .from("rooms")
-                        .update({ map_state: updatedMapState })
-                        .eq("id", room);
-                    
-                    if (updateError) {
-                        console.error("Error updating map state:", updateError);
-                    }
-                } catch (error) {
-                    console.error("Error in handleAnswer:", error);
+                } else {
+                    updatedMapState.push({
+                        user_id: gameState.attackerId as string,
+                        counties: [gameState.selectedCounty as string]
+                    });
                 }
+
+                const { error: updateError } = await supabase
+                    .from("rooms")
+                    .update({ map_state: updatedMapState })
+                    .eq("id", room);
+                
+                if (updateError) {
+                    console.error("Error updating map state:", updateError);
+                }
+            } catch (error) {
+                console.error("Error in handleAnswer:", error);
             }
         }
     };
 
     const handleNextQuestion = (selectedCountyId?: string) => {
-
         const countyNames: Record<string, string> = {
             'ROAB': 'Alba',
             'ROAR': 'Arad',
@@ -344,7 +364,7 @@ export default function Live() {
             'ROBT': 'Botosani',
             'ROBR': 'Braila',
             'ROBV': 'Brasov',
-            'ROB': 'București',
+            'ROB': 'Bucharest',
             'ROBZ': 'Buzau',
             'ROCL': 'Calarasi',
             'ROCS': 'Caras-severin',
@@ -383,8 +403,9 @@ export default function Live() {
         if (selectedCountyId && countyNames[selectedCountyId]) {
             selectedCountyName = countyNames[selectedCountyId];
         } else {
-            const availableCounties = ['Iași', 'Suceava', 'Constanța', 'Timișoara', 'Brașov', 'Galați', 'Craiova', 'Oradea'];
-            selectedCountyName = availableCounties[Math.floor(Math.random() * availableCounties.length)];
+            const availableCountyCodes = Object.keys(countyNames);
+            const randomCountyCode = availableCountyCodes[Math.floor(Math.random() * availableCountyCodes.length)];
+            selectedCountyName = countyNames[randomCountyCode];
         }
 
         const questions = [
@@ -476,6 +497,7 @@ export default function Live() {
                     timeLeft={gameState.timeLeft}
                     selectedCounty={gameState.selectedCounty}
                     map_state={mapState}
+                    currentUser={currentUser}
                 />
             </div>
 
@@ -593,7 +615,7 @@ export default function Live() {
                         <div className="mb-3 bg-purple-50 p-2 rounded-md">
                             <div className="flex items-center justify-between">
                                 <div className="text-purple-700 font-semibold text-sm">
-                                    Battle for: <span className="font-bold">{gameState.selectedCounty}</span>
+                                    Battle for {gameState.selectedCounty && <span className="font-bold">{gameState.selectedCounty}</span>}
                                 </div>
                                 <div className="text-xs text-red-600 font-bold">
                                     Time: {gameState.timeLeft.toString().padStart(2, '0')}s
@@ -623,9 +645,19 @@ export default function Live() {
                                 <button 
                                     key={index}
                                     onClick={() => handleAnswer(option)}
-                                    className="p-2 bg-white border border-purple-300 rounded-md text-base font-medium hover:bg-purple-50 hover:border-purple-500 transition-colors"
+                                    disabled={!!currentUser && gameState.attackerId !== currentUser.id}
+                                    className={`p-2 border rounded-md text-base font-medium transition-colors ${
+                                        currentUser && gameState.attackerId !== currentUser.id
+                                        ? 'bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed'
+                                        : 'bg-white border-purple-300 hover:bg-purple-50 hover:border-purple-500'
+                                    }`}
                                 >
                                     {option}
+                                    {currentUser && gameState.attackerId !== currentUser.id && index === 0 && (
+                                        <span className="block text-xs mt-1 text-red-500">
+                                            (Only {mappedUsers.find(u => u.id === gameState.attackerId)?.name} can answer)
+                                        </span>
+                                    )}
                                 </button>
                             ))}
                         </div>
@@ -655,12 +687,14 @@ export default function Live() {
                 </div>
             )}
 
-            <button 
-                onClick={handleEndGame}
-                className="fixed bottom-2 right-2 bg-white hover:bg-red-50 text-red-600 font-medium px-2 py-1 text-xs rounded-md shadow-sm z-10 border border-red-200 opacity-80 hover:opacity-100"
-            >
-                End game
-            </button>
+            {currentUser && roomData?.owner_id === currentUser.id && (
+                <button 
+                    onClick={handleEndGame}
+                    className="fixed bottom-2 right-2 bg-white hover:bg-red-50 text-red-600 font-medium px-2 py-1 text-xs rounded-md shadow-sm z-10 border border-red-200 opacity-80 hover:opacity-100"
+                >
+                    End game
+                </button>
+            )}
         </div>
     );
 }
