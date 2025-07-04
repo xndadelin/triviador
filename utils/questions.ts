@@ -14,8 +14,8 @@ export const romaniaQuestions: Question[] = [
   },
   {
     question: "Who wrote the novel \"Ion\"?",
-    options: ["Liviu rebreanu", "Mihail sadoveanu", "Ion creangă", "George coșbuc"],
-    correctAnswer: "Liviu rebreanu",
+    options: ["Liviu Rebreanu", "Mihail Sadoveanu", "Ion Creangă", "George Coșbuc"],
+    correctAnswer: "Liviu Rebreanu",
     category: "literature"
   },
   {
@@ -50,20 +50,20 @@ export const romaniaQuestions: Question[] = [
   },
   {
     question: "Who is considered the national poet of Romania?",
-    options: ["Mihai eminescu", "Ion luca caragiale", "Nichita stănescu", "Tudor arghezi"],
-    correctAnswer: "Mihai eminescu",
+    options: ["Mihai Eminescu", "Ion Luca Caragiale", "Nichita Stănescu", "Tudor Arghezi"],
+    correctAnswer: "Mihai Eminescu",
     category: "literature"
   },
   {
     question: "Which Romanian gymnast scored a perfect 10 at the 1976 Olympics?",
-    options: ["Nadia comăneci", "Simona halep", "Gheorghe hagi", "Ilie năstase"],
-    correctAnswer: "Nadia comăneci",
+    options: ["Nadia Comăneci", "Simona Halep", "Gheorghe Hagi", "Ilie Năstase"],
+    correctAnswer: "Nadia Comăneci",
     category: "sports"
   },
   {
     question: "What is the highest peak in Romania?",
-    options: ["Moldoveanu peak", "Negoiu peak", "Omu peak", "Retezat peak"],
-    correctAnswer: "Moldoveanu peak",
+    options: ["Moldoveanu Peak", "Negoiu Peak", "Omu Peak", "Retezat Peak"],
+    correctAnswer: "Moldoveanu Peak",
     category: "geography"
   }
 ];
@@ -89,8 +89,8 @@ export const historyQuestions: Question[] = [
   },
   {
     question: "Who was Romania's communist leader from 1965 to 1989?",
-    options: ["Nicolae ceaușescu", "Ion iliescu", "Gheorghe gheorghiu-dej", "Petru groza"],
-    correctAnswer: "Nicolae ceaușescu",
+    options: ["Nicolae Ceaușescu", "Ion Iliescu", "Gheorghe Gheorghiu-Dej", "Petru Groza"],
+    correctAnswer: "Nicolae Ceaușescu",
     category: "history"
   },
   {
@@ -101,14 +101,14 @@ export const historyQuestions: Question[] = [
   },
   {
     question: "Which medieval Romanian ruler is known for fighting against the Ottoman Empire?",
-    options: ["Vlad the impaler", "Stephen the great", "Mircea the elder", "Michael the brave"],
-    correctAnswer: "Vlad the impaler",
+    options: ["Vlad the Impaler", "Stephen the Great", "Mircea the Elder", "Michael the Brave"],
+    correctAnswer: "Vlad the Impaler",
     category: "history"
   },
   {
     question: "What event in 1918 led to the creation of Greater Romania?",
-    options: ["The great union", "Treaty of Versailles", "Treaty of Trianon", "Transylvanian revolution"],
-    correctAnswer: "The great union",
+    options: ["The Great Union", "Treaty of Versailles", "Treaty of Trianon", "Transylvanian Revolution"],
+    correctAnswer: "The Great Union",
     category: "history"
   }
 ];
@@ -116,8 +116,8 @@ export const historyQuestions: Question[] = [
 export const geographyQuestions: Question[] = [
   {
     question: "Which sea borders Romania to the east?",
-    options: ["Black sea", "Mediterranean sea", "Caspian sea", "Adriatic sea"],
-    correctAnswer: "Black sea",
+    options: ["Black Sea", "Mediterranean Sea", "Caspian Sea", "Adriatic Sea"],
+    correctAnswer: "Black Sea",
     category: "geography"
   },
   {
@@ -128,14 +128,14 @@ export const geographyQuestions: Question[] = [
   },
   {
     question: "What is the largest city in Transylvania?",
-    options: ["Cluj-napoca", "Brașov", "Sibiu", "Timișoara"],
-    correctAnswer: "Cluj-napoca",
+    options: ["Cluj-Napoca", "Brașov", "Sibiu", "Timișoara"],
+    correctAnswer: "Cluj-Napoca",
     category: "geography"
   },
   {
     question: "Which region is known as the \"granary of Romania\"?",
-    options: ["Bărăgan plain", "Transylvania", "Dobrogea", "Banat"],
-    correctAnswer: "Bărăgan plain",
+    options: ["Bărăgan Plain", "Transylvania", "Dobrogea", "Banat"],
+    correctAnswer: "Bărăgan Plain",
     category: "geography"
   },
   {
@@ -146,8 +146,8 @@ export const geographyQuestions: Question[] = [
   },
   {
     question: "What is the second largest city in Romania?",
-    options: ["Cluj-napoca", "Timișoara", "Iași", "Constanța"],
-    correctAnswer: "Cluj-napoca",
+    options: ["Cluj-Napoca", "Timișoara", "Iași", "Constanța"],
+    correctAnswer: "Cluj-Napoca",
     category: "geography"
   },
   {
@@ -161,8 +161,8 @@ export const geographyQuestions: Question[] = [
 export const cultureQuestions: Question[] = [
   {
     question: "Who composed the Romanian Rhapsody?",
-    options: ["George enescu", "Ciprian porumbescu", "Dinu lipatti", "Nicolae breban"],
-    correctAnswer: "George enescu",
+    options: ["George Enescu", "Ciprian Porumbescu", "Dinu Lipatti", "Nicolae Breban"],
+    correctAnswer: "George Enescu",
     category: "culture"
   },
   {
@@ -173,14 +173,14 @@ export const cultureQuestions: Question[] = [
   },
   {
     question: "Which Romanian sculptor created \"The Endless Column\"?",
-    options: ["Constantin brâncuși", "Ion jalea", "Corneliu baba", "Nicolae tonitza"],
-    correctAnswer: "Constantin brâncuși",
+    options: ["Constantin Brâncuși", "Ion Jalea", "Corneliu Baba", "Nicolae Tonitza"],
+    correctAnswer: "Constantin Brâncuși",
     category: "culture"
   },
   {
     question: "Which Romanian film won the Palme d'Or at Cannes Film Festival in 2007?",
-    options: ["4 months, 3 weeks and 2 days", "Child's pose", "The death of Mr. Lazarescu", "Beyond the hills"],
-    correctAnswer: "4 months, 3 weeks and 2 days",
+    options: ["4 Months, 3 Weeks and 2 Days", "Child's Pose", "The Death of Mr. Lazarescu", "Beyond the Hills"],
+    correctAnswer: "4 Months, 3 Weeks and 2 Days",
     category: "culture"
   },
   {
@@ -194,20 +194,20 @@ export const cultureQuestions: Question[] = [
 export const literatureQuestions: Question[] = [
   {
     question: "Which Romanian writer was a prominent member of the Theatre of the Absurd?",
-    options: ["Eugen ionesco", "Mircea eliade", "Emil cioran", "Lucian blaga"],
-    correctAnswer: "Eugen ionesco",
+    options: ["Eugen Ionesco", "Mircea Eliade", "Emil Cioran", "Lucian Blaga"],
+    correctAnswer: "Eugen Ionesco",
     category: "literature"
   },
   {
     question: "Who wrote the novel \"The Forest of the Hanged\"?",
-    options: ["Liviu rebreanu", "Camil petrescu", "Mihail sadoveanu", "Marin preda"],
-    correctAnswer: "Liviu rebreanu",
+    options: ["Liviu Rebreanu", "Camil Petrescu", "Mihail Sadoveanu", "Marin Preda"],
+    correctAnswer: "Liviu Rebreanu",
     category: "literature"
   },
   {
     question: "Which Romanian author wrote \"Nostalgia\"?",
-    options: ["Mircea cărtărescu", "Norman manea", "Herta müller", "Dan lungu"],
-    correctAnswer: "Mircea cărtărescu",
+    options: ["Mircea Cărtărescu", "Norman Manea", "Herta Müller", "Dan Lungu"],
+    correctAnswer: "Mircea Cărtărescu",
     category: "literature"
   }
 ];
@@ -226,9 +226,9 @@ export const sportsQuestions: Question[] = [
     category: "sports"
   },
   {
-    question: "Which Romanian tennis player won the Wimbledon womens singles title in 2019?",
-    options: ["Simona halep", "Sorana cîrstea", "Monica niculescu", "Irina-camelia begu"],
-    correctAnswer: "Simona halep",
+    question: "Which Romanian tennis player won the Wimbledon Women's Singles title in 2019?",
+    options: ["Simona Halep", "Sorana Cîrstea", "Monica Niculescu", "Irina-Camelia Begu"],
+    correctAnswer: "Simona Halep",
     category: "sports"
   }
 ];
@@ -236,14 +236,14 @@ export const sportsQuestions: Question[] = [
 export const scienceQuestions: Question[] = [
   {
     question: "Who is the Romanian inventor of the jet engine?",
-    options: ["Henri coandă", "Petrache poenaru", "Aurel vlaicu", "Traian vuia"],
-    correctAnswer: "Henri coandă",
+    options: ["Henri Coandă", "Petrache Poenaru", "Aurel Vlaicu", "Traian Vuia"],
+    correctAnswer: "Henri Coandă",
     category: "science"
   },
   {
     question: "Which Romanian invented the first insulin extraction method?",
-    options: ["Nicolae paulescu", "Ana aslan", "Victor babeș", "Ioan cantacuzino"],
-    correctAnswer: "Nicolae paulescu",
+    options: ["Nicolae Paulescu", "Ana Aslan", "Victor Babeș", "Ioan Cantacuzino"],
+    correctAnswer: "Nicolae Paulescu",
     category: "science"
   },
   {
